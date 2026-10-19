@@ -11,6 +11,14 @@ const POKEMONS = [
     { number: 43, name: "Mystherbe", type: "Plante" },
     ];
 
+const TYPE_POKEMON = {
+    Plante : "#78C850",
+    Feu : "#F08030",
+    Eau : "#6890F0",
+    Électrik : "#F8D030",
+}
+
+
 export default function Titre() {
     return <>
         <Text style={styles.nbPokemon}>{`Nombres de Pokemon : ${POKEMONS.length}`}</Text>
@@ -26,7 +34,7 @@ export default function Titre() {
                             {pokemon.name}
                         </Text>
                     </View>
-                    <View style={styles.containerText}>
+                    <View style={{...styles.containerText, backgroundColor: TYPE_POKEMON[pokemon.type]}}>
                         <Text>
                             {pokemon.type}
                         </Text>
@@ -68,6 +76,7 @@ const styles = StyleSheet.create({
         padding: 3,
         fontWeight: "600",
         width: "fit",
+
     },
     nbPokemon: {
         fontWeight: "bold",
