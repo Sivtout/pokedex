@@ -3,6 +3,7 @@ import Titre from "../components/Titre";
 import PokemonCard from "../components/PokemonCard";
 import { useState } from "react";
 import Sac from "../components/Sac";
+import Aide from "../components/Aide";
 
 // POKEMONS.map((pokemon) => console.log(pokemon.name));
 // const typeFeu = POKEMONS.filter((pokemon) => pokemon.type === "Feu");
@@ -22,6 +23,7 @@ export default function Index() {
 
             <PokemonCard/>
 
+            <Aide/>
             <Sac/>
 
         </ScrollView>
