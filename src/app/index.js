@@ -1,6 +1,8 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import Titre from "../components/Titre";
 import PokemonCard from "../components/PokemonCard";
+import { useState } from "react";
+import Sac from "../components/Sac";
 
 // POKEMONS.map((pokemon) => console.log(pokemon.name));
 // const typeFeu = POKEMONS.filter((pokemon) => pokemon.type === "Feu");
@@ -11,12 +13,17 @@ import PokemonCard from "../components/PokemonCard";
 // il faut lui envoyer le lien Github avant lundi
 
 export default function Index() {
+    const [count = 0, setCount] = useState(0);
+    
     return (
         <ScrollView contentContainerStyle={styles.contentContainer}>
             
             <Titre/>
+
             <PokemonCard/>
-          
+
+            <Sac/>
+
         </ScrollView>
     );
 }
