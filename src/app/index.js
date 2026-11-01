@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable, TextInput } from "react-native";
 import { useState } from "react";
 import PokemonCard from "../components/PokemonCard";
 import Titre from "../components/Titre";
@@ -16,21 +16,36 @@ const POKEMONS = [
 
 export default function Index() {
     const [feu, setFeu] = useState(false);
+    const [search, setSearch] = useState("");
 
-    const pokemons = feu ? POKEMONS.filter((pokemon) => pokemon.type === "Feu"): POKEMONS;
+    const pokemons = feu ? POKEMONS.filter((pokemon) => pokemon.type === "Feu") : POKEMONS;
+    const visibles = pokemons.filter((pokemon) =>
+        pokemon.name.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <ScrollView contentContainerStyle={styles.contentContainer}>
             <Titre />
 
+            <TextInput
+                placeholder="Rechercher un Pokémon"
+                value={search}
+                onChangeText={setSearch}
+                style={styles.searchInput}
+            />
+
             <Pressable style={styles.boutonFiltre} onPress={() => setFeu((current) => !current)}>
                 <Text style={styles.textFiltre}>{feu ? "Tout afficher" : "Seulement le type Feu"}</Text>
             </Pressable>
 
-            <Text style={styles.nbPokemon}>{`Nombres de Pokemon : ${pokemons.length}`}</Text>
-            {pokemons.map((pokemon) => (
-                <PokemonCard key={pokemon.number} pokemon={pokemon} />
-            ))}
+            <Text style={styles.nbPokemon}>{`Nombres de Pokemon : ${visibles.length}`}</Text>
+
+            {visibles.length === 0 ? (
+                <Text>Aucun Pokémon trouvé</Text>) : (
+                visibles.map((pokemon) => (
+                    <PokemonCard key={pokemon.number} pokemon={pokemon} />
+                ))
+            )}
 
             {/* <Aide/>
             <Sac/> */}
@@ -44,6 +59,13 @@ const styles = StyleSheet.create({
         padding: 20,
         gap: 20,
     },
+    searchInput: {
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 10,
+        borderColor: "#ccc",
+        backgroundColor: "white",
+    },
     nbPokemon: {
         fontWeight: "bold",
         fontSize: 20,
@@ -56,7 +78,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgb(52, 52, 52)",
     },
     textFiltre: {
-		fontWeight: "bold",
-		color: "white",
+        fontWeight: "bold",
+        color: "white",
     },
 });
