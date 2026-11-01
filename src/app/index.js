@@ -17,6 +17,15 @@ const POKEMONS = [
 export default function Index() {
     const [feu, setFeu] = useState(false);
     const [search, setSearch] = useState("");
+    const [captured, setCaptured] = useState([]);
+
+    function toggleCaptured(number) {
+        if (captured.includes(number)) {
+            setCaptured(captured.filter((n) => n !== number));
+        } else {
+            setCaptured([...captured, number]);
+        }
+    }
 
     const pokemons = feu ? POKEMONS.filter((pokemon) => pokemon.type === "Feu") : POKEMONS;
     const visibles = pokemons.filter((pokemon) =>
@@ -26,6 +35,8 @@ export default function Index() {
     return (
         <ScrollView contentContainerStyle={styles.contentContainer}>
             <Titre />
+
+            <Text style={styles.capturedTitle}>{`${captured.length} Pokémon capturés`}</Text>
 
             <TextInput
                 placeholder="Rechercher un Pokémon"
@@ -43,7 +54,12 @@ export default function Index() {
             {visibles.length === 0 ? (
                 <Text>Aucun Pokémon trouvé</Text>) : (
                 visibles.map((pokemon) => (
-                    <PokemonCard key={pokemon.number} pokemon={pokemon} />
+                    <PokemonCard
+                        key={pokemon.number}
+                        pokemon={pokemon}
+                        captured={captured.includes(pokemon.number)}
+                        onToggle={() => toggleCaptured(pokemon.number)}
+                    />
                 ))
             )}
 
@@ -58,6 +74,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         padding: 20,
         gap: 20,
+    },
+    capturedTitle: {
+        fontSize: 24,
+        fontWeight: "bold",
+        textAlign: "center",
     },
     searchInput: {
         borderWidth: 1,

@@ -1,7 +1,6 @@
 import { Text, StyleSheet, View, Image, Pressable } from "react-native";
-import { useState } from "react";
 
-const ARTWORK ="https://raw.githubusercontent.com/PokeAPI/sprites" + "/master/sprites/pokemon/other/official-artwork/";
+const ARTWORK = "https://raw.githubusercontent.com/PokeAPI/sprites" + "/master/sprites/pokemon/other/official-artwork/";
 
 const TYPE_POKEMON = {
     Plante: "#78C850",
@@ -10,11 +9,9 @@ const TYPE_POKEMON = {
     Électrik: "#F8D030",
 };
 
-export default function PokemonCard({ pokemon }) {
-    const [captured, setCaptured] = useState(false);
-
+export default function PokemonCard({ pokemon, captured, onToggle }) {
     return (
-        <View style={captured ? { ...styles.container, backgroundColor : TYPE_POKEMON[pokemon.type]} : styles.container}>
+        <View style={captured ? { ...styles.container, backgroundColor: TYPE_POKEMON[pokemon.type] } : styles.container}>
             <View style={styles.container2}>
                 <Image source={{ uri: `${ARTWORK}${pokemon.number}.png` }} style={{ width: 100, height: 100, borderRadius: 3 }} />
                 <View style={styles.deuxiemeContainer}>
@@ -27,8 +24,10 @@ export default function PokemonCard({ pokemon }) {
                     </View>
                 </View>
             </View>
-            <Pressable style={captured ? { ...styles.boutonCapture, backgroundColor: "#a3c6ff"} : styles.boutonCapture} 
-                onPress={() => setCaptured(!captured)}>
+            <Pressable
+                style={captured ? { ...styles.boutonCapture, backgroundColor: "#a3c6ff" } : styles.boutonCapture}
+                onPress={onToggle}
+            >
                 <Text>{captured ? "Capturé ✓" : "Non Capturé"}</Text>
             </Pressable>
         </View>
@@ -77,5 +76,5 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         justifyContent: "center",
         userSelect: "none",
-    },  
+    },
 });
