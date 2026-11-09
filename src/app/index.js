@@ -1,18 +1,10 @@
-import { Text, View, StyleSheet, ScrollView, Pressable, TextInput } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable, TextInput, FlatList } from "react-native";
 import { useState } from "react";
 import PokemonCard from "../components/PokemonCard";
 import Titre from "../components/Titre";
 import Sac from "../components/Sac";
 import Aide from "../components/Aide";
-
-const POKEMONS = [
-    { number: 1, name: "Bulbizarre", type: "Plante" },
-    { number: 4, name: "Salamèche", type: "Feu" },
-    { number: 7, name: "Carapuce", type: "Eau" },
-    { number: 25, name: "Pikachu", type: "Électrik" },
-    { number: 37, name: "Goupix", type: "Feu" },
-    { number: 43, name: "Mystherbe", type: "Plante" },
-];
+import POKEMONS from "../data/pokemon";
 
 export default function Index() {
     const [feu, setFeu] = useState(false);
@@ -21,19 +13,19 @@ export default function Index() {
 
     function toggleCaptured(number) {
         if (captured.includes(number)) {
-            setCaptured(captured.filter((n) => n !== number));
+            setCaptured(captured.filter((id) => id !== number));
         } else {
             setCaptured([...captured, number]);
         }
     }
 
-    const pokemons = feu ? POKEMONS.filter((pokemon) => pokemon.type === "Feu") : POKEMONS;
+    const pokemons = feu ? POKEMONS.filter((pokemon) => captured.includes(pokemon.number)) : POKEMONS;
     const visibles = pokemons.filter((pokemon) =>
         pokemon.name.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
-        <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={styles.pageContainer}>
             <Titre />
 
             <Text style={styles.capturedTitle}>{`${captured.length} Pokémon capturés`}</Text>
@@ -46,26 +38,65 @@ export default function Index() {
             />
 
             <Pressable style={styles.boutonFiltre} onPress={() => setFeu((current) => !current)}>
-                <Text style={styles.textFiltre}>{feu ? "Tout afficher" : "Seulement le type Feu"}</Text>
+                <Text style={styles.textFiltre}>{feu ? "Tout afficher" : "Seulement les pokémons capturés"}</Text>
             </Pressable>
 
-            <Text style={styles.nbPokemon}>{`Nombres de Pokemon : ${visibles.length}`}</Text>
+            <FlatList
+                data={visibles}
+                keyExtractor={(item) => String(item.number)}
+                numColumns={2}
+                columnWrapperStyle={styles.columnWrapper}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                    <View style={styles.cardItem}>
+                        <PokemonCard
+                            number={item.number}
+                            name={item.name}
+                            type={item.type}
+                            pokemon={item}
+                            captured={captured.includes(item.number)}
+                            onToggle={() => toggleCaptured(item.number)}
+                        />
+                    </View>
+                )}
+            />
+        </View>
 
-            {visibles.length === 0 ? (
-                <Text>Aucun Pokémon trouvé</Text>) : (
-                visibles.map((pokemon) => (
-                    <PokemonCard
-                        key={pokemon.number}
-                        pokemon={pokemon}
-                        captured={captured.includes(pokemon.number)}
-                        onToggle={() => toggleCaptured(pokemon.number)}
-                    />
-                ))
-            )}
 
-            {/* <Aide/>
-            <Sac/> */}
-        </ScrollView>
+        // <ScrollView contentContainerStyle={styles.contentContainer}>
+        //     <Titre />
+
+        //     <Text style={styles.capturedTitle}>{`${captured.length} Pokémon capturés`}</Text>
+
+        //     <TextInput
+        //         placeholder="Rechercher un Pokémon"
+        //         value={search}
+        //         onChangeText={setSearch}
+        //         style={styles.searchInput}
+        //     />
+
+        //     <Pressable style={styles.boutonFiltre} onPress={() => setFeu((current) => !current)}>
+        //         <Text style={styles.textFiltre}>{feu ? "Tout afficher" : "Seulement le type Feu"}</Text>
+        //     </Pressable>
+
+        //     <Text style={styles.nbPokemon}>{`Nombres de Pokemon : ${visibles.length}`}</Text>
+
+        //     {visibles.length === 0 ? (
+        //         <Text>Aucun Pokémon trouvé</Text>) : (
+        //         visibles.map((pokemon) => (
+        //             <PokemonCard
+        //                 key={pokemon.number}
+        //                 pokemon={pokemon}
+        //                 captured={captured.includes(pokemon.number)}
+        //                 onToggle={() => toggleCaptured(pokemon.number)}
+        //             />
+        //         ))
+        //     )}
+
+        //     {/* <Aide/>
+        //     <Sac/> */}
+        // </ScrollView>
     );
 }
 
@@ -75,10 +106,17 @@ const styles = StyleSheet.create({
         padding: 20,
         gap: 20,
     },
+    pageContainer: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingBottom: 16,
+    },
     capturedTitle: {
         fontSize: 24,
         fontWeight: "bold",
         textAlign: "center",
+        marginTop: 12,
+        marginBottom: 12,
     },
     searchInput: {
         borderWidth: 1,
@@ -86,10 +124,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderColor: "#ccc",
         backgroundColor: "white",
-    },
-    nbPokemon: {
-        fontWeight: "bold",
-        fontSize: 20,
+        marginBottom: 12,
     },
     boutonFiltre: {
         borderWidth: 1,
@@ -97,9 +132,22 @@ const styles = StyleSheet.create({
         padding: 10,
         alignItems: "center",
         backgroundColor: "rgb(52, 52, 52)",
+        marginBottom: 12,
     },
     textFiltre: {
         fontWeight: "bold",
         color: "white",
+    },
+    listContent: {
+        paddingBottom: 16,
+    },
+    columnWrapper: {
+        justifyContent: "space-between",
+        marginBottom: 12,
+    },
+    cardItem: {
+        flex: 1,
+        maxWidth: "48%",
+        minWidth: 0,
     },
 });
