@@ -1,10 +1,9 @@
-import { Text, View, StyleSheet, ScrollView, Pressable, TextInput, FlatList } from "react-native";
 import { useState } from "react";
-import PokemonCard from "../components/PokemonCard";
-import Titre from "../components/Titre";
-import Sac from "../components/Sac";
-import Aide from "../components/Aide";
-import POKEMONS from "../data/pokemon";
+import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import PokemonCard from "../../components/PokemonCard";
+import Titre from "../../components/Titre";
+import POKEMONS from "../../data/pokemon";
+
 
 export default function Index() {
     const [feu, setFeu] = useState(false);
@@ -25,6 +24,7 @@ export default function Index() {
     );
 
     return (
+        <>
         <View style={styles.pageContainer}>
             <Titre />
 
@@ -45,6 +45,7 @@ export default function Index() {
                 data={visibles}
                 keyExtractor={(item) => String(item.number)}
                 numColumns={2}
+                extraData={captured}
                 columnWrapperStyle={styles.columnWrapper}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
@@ -62,6 +63,8 @@ export default function Index() {
                 )}
             />
         </View>
+    
+        </>
 
 
         // <ScrollView contentContainerStyle={styles.contentContainer}>

@@ -1,4 +1,5 @@
 import { Text, StyleSheet, View, Image, Pressable } from "react-native";
+import { router } from "expo-router";
 
 const ARTWORK = "https://raw.githubusercontent.com/PokeAPI/sprites" + "/master/sprites/pokemon/other/official-artwork/";
 
@@ -25,7 +26,8 @@ const TYPE_POKEMON = {
 
 export default function PokemonCard({ pokemon, captured, onToggle }) {
     return (
-        <View style={captured ? { ...styles.container, backgroundColor: TYPE_POKEMON[pokemon.type] } : styles.container}>
+        <Pressable style={captured ? { ...styles.container, backgroundColor: TYPE_POKEMON[pokemon.type] } : styles.container}
+        onPress={() => router.push(`/pokemon/${pokemon.number}`)}>
             <View style={styles.container2}>
                 <Image source={{ uri: `${ARTWORK}${pokemon.number}.png` }} style={styles.image} />
                 <View style={styles.deuxiemeContainer}>
@@ -43,7 +45,7 @@ export default function PokemonCard({ pokemon, captured, onToggle }) {
                 onPress={onToggle}>
                 <Text>{captured ? "Capturé ✓" : "Non Capturé"}</Text>
             </Pressable>
-        </View>
+        </Pressable>
     );
 }
 
