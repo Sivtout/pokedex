@@ -39,8 +39,9 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   title: {
-    flexDirection: "row",
-    fontSize: 30,
+    justifyContent: "center",
+    alignItems: "center", 
+    fontSize: 25,
     fontWeight: "bold",
   },
   sub: {
