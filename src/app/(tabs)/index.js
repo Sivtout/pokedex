@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, Vi
 import PokemonCard from "../../components/PokemonCard";
 import Titre from "../../components/Titre";
 import POKEMONS from "../../data/pokemon";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API = "https://pokeapi.co/api/v2/pokemon?limit=151";
 
@@ -17,11 +18,14 @@ export default function Index() {
     const [pokemons, setPokemons] = useState(null);
 
     function toggleCaptured(number) {
+        let nouvelles = [];
         if (captured.includes(number)) {
-            setCaptured(captured.filter((id) => id !== number));
+            nouvelles = captured.filter((id) => id !== number);
         } else {
-            setCaptured([...captured, number]);
+            nouvelles = [...captured, number];
         }
+        setCaptured(nouvelles);
+        AsyncStorage.setItem("captures", JSON.stringify(nouvelles));
     }
 
     async function charger() {
@@ -31,16 +35,22 @@ export default function Index() {
             const number = i + 1;
             const local = POKEMONS.find((item) => item.number === number);
             return {
-                number,
-                name: local?.name ?? majuscule(p.name),
-                type: local?.type ?? "Inconnu",
+                number, name: local?.name ?? majuscule(p.name), type: local?.type ?? "Inconnu",
             };
         });
         setPokemons(liste);
     }
 
+    async function chargerCaptures() {
+        const texte = await AsyncStorage.getItem("captures");
+        if (texte !== null) {
+            setCaptured(JSON.parse(texte))
+        }
+    }
+
     useEffect(() => {
         charger();
+        chargerCaptures();
     }, []);
 
     if (pokemons === null) {
