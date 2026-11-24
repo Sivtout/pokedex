@@ -1,14 +1,20 @@
-import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import PokemonCard from "../../components/PokemonCard";
 import Titre from "../../components/Titre";
 import POKEMONS from "../../data/pokemon";
 
+const API = "https://pokeapi.co/api/v2/pokemon?limit=151";
+
+function majuscule(nom) {
+    return nom.charAt(0).toUpperCase() + nom.slice(1);
+}
 
 export default function Index() {
     const [feu, setFeu] = useState(false);
     const [search, setSearch] = useState("");
     const [captured, setCaptured] = useState([]);
+    const [pokemons, setPokemons] = useState(null);
 
     function toggleCaptured(number) {
         if (captured.includes(number)) {
@@ -18,13 +24,38 @@ export default function Index() {
         }
     }
 
-    const pokemons = feu ? POKEMONS.filter((pokemon) => captured.includes(pokemon.number)) : POKEMONS;
-    const visibles = pokemons.filter((pokemon) =>
+    async function charger() {
+        const reponse = await fetch(API);
+        const data = await reponse.json();
+        const liste = data.results.map((p, i) => {
+            const number = i + 1;
+            const local = POKEMONS.find((item) => item.number === number);
+            return {
+                number,
+                name: local?.name ?? majuscule(p.name),
+                type: local?.type ?? "Inconnu",
+            };
+        });
+        setPokemons(liste);
+    }
+
+    useEffect(() => {
+        charger();
+    }, []);
+
+    if (pokemons === null) {
+        return <ActivityIndicator size="large" style={{ flex: 1 }} />;
+    }
+
+    const capturesSeulement = feu;
+    const filtres = capturesSeulement
+        ? pokemons.filter((pokemon) => captured.includes(pokemon.number))
+        : pokemons;
+    const visibles = filtres.filter((pokemon) =>
         pokemon.name.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
-        <>
         <View style={styles.pageContainer}>
             <Titre />
 
@@ -41,30 +72,31 @@ export default function Index() {
                 <Text style={styles.textFiltre}>{feu ? "Tout afficher" : "Seulement les pokémons capturés"}</Text>
             </Pressable>
 
-            <FlatList
-                data={visibles}
-                keyExtractor={(item) => String(item.number)}
-                numColumns={2}
-                extraData={captured}
-                columnWrapperStyle={styles.columnWrapper}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                    <View style={styles.cardItem}>
-                        <PokemonCard
-                            number={item.number}
-                            name={item.name}
-                            type={item.type}
-                            pokemon={item}
-                            captured={captured.includes(item.number)}
-                            onToggle={() => toggleCaptured(item.number)}
-                        />
-                    </View>
-                )}
-            />
+            {visibles.length === 0 ? (
+                <Text style={styles.emptyText}>Aucun Pokémon trouvé</Text>
+            ) : (
+                <FlatList
+                    data={visibles}
+                    keyExtractor={(item) => String(item.number)}
+                    numColumns={2}
+                    extraData={captured}
+                    columnWrapperStyle={styles.columnWrapper}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <View style={styles.cardItem}>
+                            <PokemonCard
+                                pokemon={item}
+                                captured={captured.includes(item.number)}
+                                onToggle={() => toggleCaptured(item.number)}
+                            />
+                        </View>
+                    )}
+                />
+            )}
         </View>
     
-        </>
+       
 
 
         // <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -104,11 +136,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-    contentContainer: {
-        justifyContent: "center",
-        padding: 20,
-        gap: 20,
-    },
     pageContainer: {
         flex: 1,
         paddingHorizontal: 16,
@@ -152,5 +179,9 @@ const styles = StyleSheet.create({
         flex: 1,
         maxWidth: "48%",
         minWidth: 0,
+    },
+    emptyText: {
+        textAlign: "center",
+        marginTop: 20,
     },
 });
